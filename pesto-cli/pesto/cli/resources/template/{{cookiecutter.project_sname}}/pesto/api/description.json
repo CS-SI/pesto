@@ -3,6 +3,7 @@
   "name": "{{cookiecutter.project_sname}}",
   "version": "{{cookiecutter.project_version}}",
   "description": "{{cookiecutter.project_short_description}}",
+  "logger_name": "{{cookiecutter.logger_name}}",
   "family": "detection",
   "template": "object-detection",
   "keywords": [

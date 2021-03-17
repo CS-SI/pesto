@@ -4,5 +4,6 @@
   "project_name": "algo-service",
   "project_sname": "{{ cookiecutter.project_name.lower().replace(' ', '-') }}",
   "project_short_description": "Pesto Template contains all the boilerplate you need to create a processing-factory project",
-  "project_version": "1.0.0.dev0"
+  "project_version": "1.0.0.dev0",
+  "logger_name": "ws-algo-service"
 }
