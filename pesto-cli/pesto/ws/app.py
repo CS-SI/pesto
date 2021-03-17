@@ -1,19 +1,74 @@
-from sanic import Sanic
-from sanic_openapi import swagger_blueprint, openapi_blueprint
+import sys
 
-from pesto.ws.v1 import v1
-
+from pesto.common.utils import get_logger
 import logging
 
-_logging_format = '[%(asctime)s] %(process)d-%(levelname)s '
-_logging_format += '%(module)s::%(funcName)s():l%(lineno)d: '
-_logging_format += '%(message)s'
+# override sanic logger
+from sanic.log import LOGGING_CONFIG_DEFAULTS
 
-#logging.basicConfig(format=_logging_format, level=logging.DEBUG)
-logging.basicConfig(format=_logging_format)
+logging.Logger.manager.loggerDict["sanic.root"] = get_logger()
+logging.Logger.manager.loggerDict["sanic.access"] = get_logger()
+logging.Logger.manager.loggerDict["sanic.error"] = get_logger()
+from sanic.server import  HTTPResponse
+
+def my_log_response(self, response):
+    if self.access_log:
+        extra = {"status": getattr(response, "status", 0)}
+
+        if isinstance(response, HTTPResponse):
+            extra["byte"] = len(response.body)
+        else:
+            extra["byte"] = -1
+
+        extra["host"] = "UNKNOWN"
+        if self.request is not None:
+            if self.request.ip:
+                extra["host"] = "{0}:{1}".format(
+                    self.request.ip, self.request.port
+                )
+
+            extra["request"] = "{0} {1}".format(
+                self.request.method, self.request.url
+            )
+        else:
+            extra["request"] = "nil"
+        msg = "(sanic.access) [{}]: {} {} {}".format(extra['host'], extra['request'], extra['status'], extra['byte'])
+        logging.getLogger("sanic.access").info(msg)
+
+PESTO_LOGGING_CONFIG_DEFAULTS = dict(
+    version=1,
+    disable_existing_loggers=False,
+    loggers={
+        "sanic.root": {"level": "INFO", "handlers": ["console"]},
+    },
+    handlers={
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "generic",
+            "stream": sys.stdout,
+        }
+    },
+    formatters={
+        "generic": {
+            "format": "%(asctime)s [%(process)d] [%(levelname)s] %(message)s",
+            "datefmt": "[%Y-%m-%d %H:%M:%S %z]",
+            "class": "logging.Formatter",
+        }
+    },
+)
+#default stdout hanlder for pesto incase if there is no call to init_looger(..) like codip
+logging.config.dictConfig(PESTO_LOGGING_CONFIG_DEFAULTS)
+
+from sanic import Sanic
+from sanic.server import HttpProtocol
+HttpProtocol.log_response = my_log_response
+from sanic_openapi import swagger_blueprint, openapi_blueprint
+from pesto.ws.v1 import v1
 
 # Declare Sanic application
-app = Sanic(__name__)
+# configure_logging must be False as we are using PESTO_LOGGING_CONFIG_DEFAULTS
+
+app = Sanic(__name__, configure_logging=False)
 
 # API Configuration
 app.blueprint(openapi_blueprint)
