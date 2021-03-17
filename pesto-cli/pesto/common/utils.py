@@ -1,5 +1,6 @@
 import filecmp
 import json
+import logging
 import os
 from tempfile import NamedTemporaryFile
 from typing import Any
@@ -8,6 +9,16 @@ import jsonschema
 # TODO: fix this import (should not import anything from ws)
 from pesto.ws.features.converter.image.image import Image
 
+
+def get_logger():
+    """
+    Get a logger by name. Name of logger comes from /etc/pesto/service.json
+    which is setup during 'pesto init'
+    """
+    SERVICE_JSON_PATH = '/etc/pesto/service.json'
+    description = load_json(SERVICE_JSON_PATH)
+    logger_name = description['logger_name'] if 'logger_name' in description.keys() else 'pesto'
+    return logging.getLogger(logger_name)
 
 def mkdir(path: str) -> None:
     directory = os.path.dirname(path)
