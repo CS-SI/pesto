@@ -1,11 +1,10 @@
-import logging
+
 from enum import Enum
 from typing import Dict
 
+from pesto.common.utils import get_logger
 from pesto.ws.core.pesto_feature import PestoFeature
 from pesto.ws.features.converter.image.image_roi import ImageROI
-
-log = logging.getLogger(__name__)
 
 
 class PestoConfig(Enum):
@@ -24,7 +23,7 @@ class PayloadParser(object):
 
     @staticmethod
     def parse(payload: dict) -> Dict[PestoConfig, PestoFeature]:
-        log.info('pesto features extraction ...')
+        get_logger().info('pesto features extraction ...')
 
         config = payload.pop('pesto') if 'pesto' in payload else {}
 

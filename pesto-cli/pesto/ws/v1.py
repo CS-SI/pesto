@@ -1,5 +1,4 @@
 import asyncio
-import logging
 from typing import Any
 
 from sanic import Blueprint, response
@@ -8,6 +7,7 @@ from sanic.request import Request
 from sanic.response import HTTPResponse
 from sanic_openapi import doc
 
+from pesto.common.utils import get_logger
 from pesto.ws.service.describe import DescribeService
 from pesto.ws.service.job_delete import JobDeleteService
 from pesto.ws.service.job_list import JobListService
@@ -15,7 +15,6 @@ from pesto.ws.service.job_result import JobResultService, ResultType
 from pesto.ws.service.job_status import JobStatusService
 from pesto.ws.service.process import ProcessService
 
-log = logging.getLogger('pesto')
 v1 = Blueprint('v1', url_prefix='/api/v1')
 
 processing_semaphore = None
@@ -43,7 +42,7 @@ async def describe(request: Request) -> HTTPResponse:
         service_description = DescribeService(url_root).compute_describe()
         return response.json(service_description)
     except Exception as e:
-        log.exception(e)
+        get_logger().exception(e)
         raise ServerError('service.json does not exist or is not json serializable',
                           status_code=500)
 
@@ -55,7 +54,7 @@ def version_get(request: Request) -> HTTPResponse:
         version = DescribeService.compute_version()
         return response.json(version)
     except Exception as e:
-        log.exception(e)
+        get_logger().exception(e)
         message = 'Could not load version file : {}'.format(DescribeService.VERSION_CONTENT_PATH)
         raise ServerError(message, status_code=500)
 
@@ -113,7 +112,7 @@ def jobs_results_delete(request: Request, job_id: str) -> HTTPResponse:
         JobDeleteService(url_root, job_id).delete()
         return HTTPResponse()
     except Exception as e:
-        log.exception(e)
+        get_logger().exception(e)
         message = 'Error while deleting : job_id = {}'.format(job_id)
         raise ServerError(message, status_code=500)
 
@@ -126,7 +125,7 @@ async def jobs_results_id_get(request: Request, job_id: str, result_id: str) -> 
         output, data_type = JobResultService(url_root, job_id).get_partial_result(result_id)
         return await _prepare_response(output, data_type)
     except Exception as e:
-        log.exception(e)
+        get_logger().exception(e)
         message = 'Error while retrieving results : job_id = {}, result_id = {}'.format(job_id, result_id)
         raise ServerError(message, status_code=500)
 
@@ -139,7 +138,7 @@ def jobs_results_id_delete(request: Request, job_id: str, result_id: str) -> HTT
         JobDeleteService(url_root, job_id).delete_partial(result_id)
         return HTTPResponse({})
     except Exception as e:
-        log.exception(e)
+        get_logger().exception(e)
         message = 'Error while deleting : job_id = {}, result_id = {}'.format(job_id, result_id)
         raise ServerError(message, status_code=500)
 
@@ -162,7 +161,7 @@ async def process_post(request: Request) -> HTTPResponse:
         output, data_type = await asyncio.wait_for(future, timeout=None)
         return await _prepare_response(output, data_type)
     except Exception as e:
-        log.exception(e)
+        get_logger().exception(e)
         message = 'Error while processing, see logs for more details : {}'.format(str(e))
         raise ServerError(message, status_code=500)
     finally:

@@ -1,10 +1,6 @@
-import logging
-
 import jsonschema
 
 from pesto.ws.core.pesto_feature import PestoFeature
-
-log = logging.getLogger(__name__)
 
 
 class SchemaValidation(PestoFeature):

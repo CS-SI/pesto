@@ -1,12 +1,10 @@
-import logging
 import os
 from enum import Enum
 from typing import List, Tuple, Optional
 import re
 from pesto.common.utils import load_json
+from pesto.common.utils import get_logger
 from pesto.ws.service.job_list import JobListService
-
-log = logging.getLogger(__name__)
 
 
 class ResultType(Enum):
@@ -58,7 +56,7 @@ class JobResultService:
             path = self._get_partial_result_path(data_type.extensions, result_id)
             if path is not None:
                 output = data_type.transform(path)
-                log.info('get job result {} : type={} output={}'.format(result_id, data_type, output))
+                get_logger().info('get job result {} : type={} output={}'.format(result_id, data_type, output))
                 return output, data_type
 
         raise ValueError('No partial result found for job_id={} result_id={}'.format(self.job_id, result_id))

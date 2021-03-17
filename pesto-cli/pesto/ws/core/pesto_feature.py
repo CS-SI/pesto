@@ -1,8 +1,7 @@
 import logging
 from abc import ABC
 from typing import List
-
-log = logging.getLogger(__name__)
+## from pesto.common.utils import get_logger
 
 
 class PestoFeature(ABC):
@@ -17,6 +16,6 @@ class PestoFeatures(PestoFeature):
     def process(self, payload: dict) -> dict:
         result = payload
         for feat in self.features:
-            log.info('PESTO PROCESSING : [{}]'.format(feat.__class__.__name__))
+            logging.getLogger(__name__).info('PESTO PROCESSING : [{}]'.format(feat.__class__.__name__))
             result = feat.process(result)
         return result

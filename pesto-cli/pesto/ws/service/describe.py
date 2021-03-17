@@ -1,15 +1,14 @@
-import logging
 import os
 from typing import Any
 
 from pesto.common.utils import load_json
 
-log = logging.getLogger(__name__)
-
 
 class DescribeService(object):
     SERVICE_JSON_PATH = '/etc/pesto/service.json'
+    SERVICE_JSON_PATH = "/home/rkm/.pesto/ws-l0-to-l1ca/1.0.0.dev0/ws-l0-to-l1ca/pesto/api/service.json"
     VERSION_CONTENT_PATH = '/etc/pesto/version.json'
+    #VERSION_CONTENT_PATH = "/home/rkm/.pesto/algo-service/1.0.0.dev0/algo-service/pesto/api/version.json"
 
     def __init__(self, url_root: str):
         self.description = load_json(DescribeService.SERVICE_JSON_PATH)

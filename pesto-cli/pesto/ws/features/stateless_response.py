@@ -1,14 +1,14 @@
-import logging
+
 import os
 import shutil
 from typing import Any
 
-from pesto.ws.features.converter.image.image import Image
+
 from pesto.ws.core.pesto_feature import PestoFeature
+from pesto.common.utils import get_logger
+from pesto.ws.features.converter.image.image import Image
 from pesto.ws.service.job_list import JobListService
 from pesto.ws.service.job_result import JobResultService, ResultType
-
-log = logging.getLogger(__name__)
 
 
 class StatelessResponse(PestoFeature):
@@ -22,13 +22,13 @@ class StatelessResponse(PestoFeature):
     def process(self, payload: dict) -> Any:
         try:
             if self._unique_response():
-                log.info('response mode : stateless : unique response')
+                get_logger().info('response mode : stateless : unique response')
                 result_id = list(self.schema.keys())[0]
                 path, data_type = self.result_service.get_partial_result(result_id)
                 if data_type == ResultType.image:
                     return path, ResultType.image
 
-            log.info('response mode : stateless')
+            get_logger().info('response mode : stateless')
             for key in payload.keys():
                 key_type = self.output_properties[key].get('$ref')
                 if key_type == '#/definitions/Image':
@@ -42,7 +42,7 @@ class StatelessResponse(PestoFeature):
             shutil.rmtree(job_path, ignore_errors=True)
 
     def _unique_response(self) -> bool:
-        log.info('output_properties: {}'.format(str(self.output_properties)))
+        get_logger().info('output_properties: {}'.format(str(self.output_properties)))
 
         try:
             unique_response = len(set(self.output_properties)) == 1

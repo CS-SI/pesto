@@ -1,5 +1,4 @@
 import asyncio
-import logging
 import traceback
 import uuid
 from typing import Optional, Tuple, Any, Callable
@@ -7,6 +6,7 @@ from typing import Optional, Tuple, Any, Callable
 from pesto.ws.core.payload_parser import PayloadParser, PestoConfig
 from pesto.ws.core.pesto_feature import PestoFeatures
 from pesto.ws.core.utils import load_class, async_exec
+from pesto.common.utils import get_logger
 from pesto.ws.features.algorithm_wrapper import AlgorithmWrapper
 from pesto.ws.features.converter.image.image_roi import ImageROI, DummyImageROI
 from pesto.ws.features.payload_converter import PayloadConverter
@@ -17,8 +17,6 @@ from pesto.ws.features.stateful_response import StatefulResponse
 from pesto.ws.features.stateless_response import StatelessResponse
 from pesto.ws.service.describe import DescribeService
 from pesto.ws.service.job_result import ResultType
-
-log = logging.getLogger(__name__)
 
 
 class ProcessService:
@@ -33,18 +31,18 @@ class ProcessService:
             raise ValueError('Process Service already loaded !')
 
         try:
-            log.info('ProcessService.init() ...')
+            get_logger().info('ProcessService.init() ...')
             ProcessService._algorithm = load_class(ProcessService.PROCESS_CLASS_NAME)()
             if hasattr(ProcessService._algorithm, 'on_start'):
-                log.info('ProcessService.on_start() ...')
+                get_logger().info('ProcessService.on_start() ...')
                 ProcessService._algorithm.on_start()
-                log.info('ProcessService.on_start() ... Done !')
+                get_logger().info('ProcessService.on_start() ... Done !')
 
-            log.info('ProcessService.init() ... Done !')
+            get_logger().info('ProcessService.init() ... Done !')
 
         except:
             traceback.print_exc()
-            log.warning('Algorithm {}.on_start() failure !'.format(ProcessService.PROCESS_CLASS_NAME))
+            get_logger().warning('Algorithm {}.on_start() failure !'.format(ProcessService.PROCESS_CLASS_NAME))
 
     def __init__(self, url_root: str):
         self.url_root = url_root

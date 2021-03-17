@@ -1,10 +1,8 @@
-import logging
 import os
 import shutil
 
+from pesto.common.utils import get_logger
 from pesto.ws.service.job_list import JobListService
-
-log = logging.getLogger(__name__)
 
 
 class JobDeleteService:
@@ -14,7 +12,7 @@ class JobDeleteService:
         self.url_root = url_root
 
     def delete(self) -> None:
-        log.info('delete: job_id = {}'.format(self.job_id))
+        get_logger().info('delete: job_id = {}'.format(self.job_id))
         shutil.rmtree(self.job_path)
 
     def delete_partial(self, result_id: str) -> None:

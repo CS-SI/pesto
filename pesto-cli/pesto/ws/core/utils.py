@@ -1,12 +1,10 @@
 import asyncio
 import importlib
-import logging
 from concurrent.futures.thread import ThreadPoolExecutor
 from typing import Any, Callable
 
+from pesto.common.utils import get_logger
 from pesto.ws.core.processing_error import ProcessingError
-
-log = logging.getLogger(__name__)
 
 
 async def async_exec(callback: Callable) -> Any:
@@ -23,7 +21,7 @@ def load_class(path: str) -> Any:
     :return: the requested class object
     """
     try:
-        log.info('loading class : [{}]'.format(path))
+        get_logger().info('loading class : [{}]'.format(path))
         module_name, class_name = path.rsplit('.', 1)
         mod = importlib.import_module(module_name)
         return getattr(mod, class_name)
