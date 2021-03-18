@@ -18,8 +18,6 @@ class BuildConfig:
                   ):
         assert path is not None
 
-
-
         build_config = load_json(path)
         return BuildConfig(
             name=build_config['name'],

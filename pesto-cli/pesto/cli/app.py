@@ -26,7 +26,6 @@ def parse_args() -> argparse.Namespace:
 
     subparsers = parser.add_subparsers(dest='subcommand', title='subcommands', help='Valid subcommands')
     subparsers.required = True
-    parser.add_argument('--logger_name', help='Use a custom logger name', default='pesto')
     # init
     parser_init = subparsers.add_parser('init')
     parser_init.add_argument('-t', '--template', help='path to the algorithm template', default=ALGO_TEMPLATE_PATH)
@@ -57,7 +56,7 @@ def main() -> None:
     display_banner()
     args = parse_args()
     if args.subcommand == 'init':
-        init.init(args.target, args.template, logger_name=args.logger_name)
+        init.init(args.target, args.template)
     elif args.subcommand == 'build':
         build.build(search_build_config(args), args.profile, args.proxy)
     elif args.subcommand == 'test':
