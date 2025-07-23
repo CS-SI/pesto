@@ -109,6 +109,16 @@ class TestRunner:
 
                 self._serialize_response(response_path, response)
 
+                # Metrics after one more test
+                metrics = service_tester.endpoint_manager.metrics
+                logger.info("Metrics after one more test:")
+                logger.info(metrics)
+
+            # Metrics after all tests
+            metrics = service_tester.endpoint_manager.metrics
+            logger.info("Metrics after all tests:")
+            logger.info(metrics)
+
         with open(self._tmp_test_resources / "results.json", "w") as f:
             json.dump(all_results, f, indent=2)
 
