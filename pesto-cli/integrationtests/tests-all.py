@@ -205,28 +205,7 @@ if __name__ == "__main__":
         print("==========================================")
         print("==== Testing legacy template with SSL ====")
         print("==========================================")
-        success = success and check_init(True) and check_build(True) and check_run_docker(True) and check_run_local(True) and check_test()
-
-        rm_temp_dir()
-
-        print("=============================================")
-        print("==== Testing legacy template without SSL ====")
-        print("=============================================")
-        success = success and check_init(True) and check_build() and check_run_docker() and check_run_local() and check_test()
-
-        rm_temp_dir()
-
-        print("=============================================")
-        print("==== Testing generated template with SSL ====")
-        print("=============================================")
-        success = success and check_init() and check_build(True) and check_run_docker(True) and check_run_local(True) and check_test()
-
-        rm_temp_dir()
-
-        print("================================================")
-        print("==== Testing generated template without SSL ====")
-        print("================================================")
-        success = success and check_init() and check_build() and check_run_docker() and check_run_local() and check_test()
+        success = check_init(True) and check_build(True) and check_run_docker(True) and check_run_local(True) and check_test() and success
 
     except Exception as e:
         print("Exception occurred during tests:", e)
@@ -236,10 +215,56 @@ if __name__ == "__main__":
 
     finally:
         rm_temp_dir()
-        if success:
-            print("****** ALL TESTS OK *******")
-            sys.exit(0)
-        else:
-            print("!!!!!! A TEST FAILED, CHECK THE LOGS ABOVE !!!!!!")
-            sys.exit(1)
+
+    try:
+        print("=============================================")
+        print("==== Testing legacy template without SSL ====")
+        print("=============================================")
+        success = check_init(True) and check_build() and check_run_docker() and check_run_local() and check_test() and success
+
+    except Exception as e:
+        print("Exception occurred during tests:", e)
+        import traceback
+        traceback.print_exc()
+        success = False
+
+    finally:
+        rm_temp_dir()
+
+    try:
+        print("=============================================")
+        print("==== Testing generated template with SSL ====")
+        print("=============================================")
+        success = check_init() and check_build(True) and check_run_docker(True) and check_run_local(True) and check_test() and success
+
+    except Exception as e:
+        print("Exception occurred during tests:", e)
+        import traceback
+        traceback.print_exc()
+        success = False
+
+    finally:
+        rm_temp_dir()
+            
+    try:
+        print("================================================")
+        print("==== Testing generated template without SSL ====")
+        print("================================================")
+        success = check_init() and check_build() and check_run_docker() and check_run_local() and check_test() and success
+
+    except Exception as e:
+        print("Exception occurred during tests:", e)
+        import traceback
+        traceback.print_exc()
+        success = False
+
+    finally:
+        rm_temp_dir()
+
+    if success:
+        print("****** ALL TESTS OK *******")
+        sys.exit(0)
+    else:
+        print("!!!!!! A TEST FAILED, CHECK THE LOGS ABOVE !!!!!!")
+        sys.exit(1)
 
