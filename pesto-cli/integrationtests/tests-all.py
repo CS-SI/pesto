@@ -228,6 +228,12 @@ if __name__ == "__main__":
         print("================================================")
         success = success and check_init() and check_build() and check_run_docker() and check_run_local() and check_test()
 
+    except Exception as e:
+        print("Exception occurred during tests:", e)
+        import traceback
+        traceback.print_exc()
+        success = False
+
     finally:
         rm_temp_dir()
         if success:
