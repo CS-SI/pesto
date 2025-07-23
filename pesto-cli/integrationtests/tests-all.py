@@ -110,7 +110,11 @@ def check_build(use_ssl=False):
     with ServiceManager(docker_image=image_name, network="host", use_ssl=use_ssl) as service:
         service.run()
         time.sleep(5)
-        describe = EndpointManager(server_url=service.server_url).describe
+        endpoint = EndpointManager(server_url=service.server_url)
+        metrics = endpoint.metrics
+        print("Metrics:")
+        print(metrics)
+        describe = endpoint.describe
         if describe.get("title") == sname and describe.get("version") == "1.0.0.dev0":
             print(">>>> `build` command test successful: Docker image found and responding.")
             return True

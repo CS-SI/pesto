@@ -73,6 +73,10 @@ class TestRunner:
 
             all_results = dict()
 
+            metrics = service_tester.endpoint_manager.metrics
+            logger.info("Metrics:")
+            logger.info(metrics)
+
             # Save describes for debug
             expected_describe_file = "expected_describe.ssl.json" if self.ssl else "expected_describe.json"
             with open(self._tmp_test_resources / expected_describe_file, "w") as f:

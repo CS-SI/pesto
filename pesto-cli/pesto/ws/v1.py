@@ -5,6 +5,8 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse, Response, RedirectResponse, FileResponse
 
+from pesto.version import PESTO_VERSION
+
 from pesto.ws.service.describe import DescribeService
 from pesto.ws.service.job_delete import JobDeleteService
 from pesto.ws.service.job_list import JobListService
@@ -58,6 +60,16 @@ def version_get(request: Request) -> JSONResponse:
 @v1.get('/health')
 def health() -> Response:
     return Response(content='OK',status_code=200,media_type='text/plain')
+
+@v1.get('/metrics')
+def metrics() -> Response:
+    processing_version = DescribeService.compute_version().get("version", "unknown")
+    metrics = (
+        '# HELP pesto_instance_info Information about the Pesto instance\n'
+        '# TYPE pesto_instance_info gauge\n'
+        f'pesto_instance_info{{pesto_version="{PESTO_VERSION}",processing_version="{processing_version}"}} 1\n'
+    )
+    return Response(content=metrics, status_code=200, media_type='text/plain')
 
 @v1.post('/jobs')
 def jobs_post(request: Request) -> JSONResponse:

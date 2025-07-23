@@ -12,12 +12,28 @@ class EndpointManager:
     def __init__(self, server_url):
         self.server_url = server_url
         self._describe = None
+        self._metrics = None
 
     @property
     def is_alive(self) -> bool:
         try:
             response = requests.get("{}/api/v1/health".format(self.server_url), verify=False)
 
+            return response.status_code == 200
+        except:
+            return False
+
+    @property
+    def metrics(self) -> str:
+        if not self._metrics:
+            response = requests.get(url="{}/api/v1/metrics".format(self.server_url), verify=False)
+            self._metrics = response.text
+        return self._metrics
+
+    @property
+    def metrics_available(self) -> bool:
+        try:
+            response = requests.get(url="{}/api/v1/metrics".format(self.server_url), verify=False)
             return response.status_code == 200
         except:
             return False
