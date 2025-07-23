@@ -64,10 +64,17 @@ def health() -> Response:
 @v1.get('/metrics')
 def metrics(request: Request) -> Response:
     processing_version = DescribeService.compute_version().get("version", "unknown")
+    if processing_semaphore.locked():
+        lock = 1
+    else:
+        lock = 0
     metrics = (
         '# HELP pesto_instance_info Information about the Pesto instance\n'
         '# TYPE pesto_instance_info gauge\n'
         f'pesto_instance_info{{pesto_version="{PESTO_VERSION}",processing_version="{processing_version}"}} 1\n'
+        '# HELP pesto_processing_lock Information about the jobs\n'
+        '# TYPE pesto_processing_lock gauge\n'
+        f'pesto_processing_lock {lock}\n'
         '# HELP pesto_jobs_total Information about the jobs\n'
         '# TYPE pesto_jobs_total gauge\n'
     )
