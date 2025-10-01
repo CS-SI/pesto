@@ -23,6 +23,11 @@ class ServiceTester:
 
         comparison_results = compare_dicts(expected, describe)
 
+        # We can afford new keys in the describe
+        # as it reflect a newer runtime (new endpoints) than the stored reference.
+        if comparison_results and "KeysNotExpected" in comparison_results:
+            del comparison_results["KeysNotExpected"]
+
         comparison_results = comparison_results or {"NoDifference": True}
 
         return comparison_results
