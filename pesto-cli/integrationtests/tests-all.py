@@ -8,6 +8,7 @@ import shutil
 import tarfile
 import tempfile
 import time
+import unittest
 
 import pkg_resources
 from pesto.cli.app import ALGO_TEMPLATE_PATH
@@ -201,43 +202,71 @@ def rm_temp_dir():
         shutil.rmtree(temp)
 
 
+class TestIntegrationAll(unittest.TestCase):
+    def setUp(self):
+        rm_temp_dir()
+
+    def tearDown(self):
+        rm_temp_dir()
+
+    def test_legacy_template_with_ssl(self):
+        try:
+            print("==========================================")
+            print("==== Testing legacy template with SSL ====")
+            print("==========================================")
+            self.assertTrue(check_init(True))
+            self.assertTrue(check_build(True))
+            self.assertTrue(check_run_docker(True))
+            self.assertTrue(check_run_local(True))
+            self.assertTrue(check_test())
+        except Exception as e:
+            self.fail(f"Exception occurred: {e}")
+
+    def test_legacy_template_without_ssl(self):
+        try:
+            print("=============================================")
+            print("==== Testing legacy template without SSL ====")
+            print("=============================================")
+            self.assertTrue(check_init(True))
+            self.assertTrue(check_build())
+            self.assertTrue(check_run_docker())
+            self.assertTrue(check_run_local())
+            self.assertTrue(check_test())
+        except Exception as e:
+            self.fail(f"Exception occurred: {e}")
+
+    def test_generated_template_with_ssl(self):
+        try:
+            print("=============================================")
+            print("==== Testing generated template with SSL ====")
+            print("=============================================")
+            self.assertTrue(check_init())
+            self.assertTrue(check_build(True))
+            self.assertTrue(check_run_docker(True))
+            self.assertTrue(check_run_local(True))
+            self.assertTrue(check_test())
+        except Exception as e:
+            self.fail(f"Exception occurred: {e}")
+
+    def test_generated_template_without_ssl(self):
+        try:
+            print("================================================")
+            print("==== Testing generated template without SSL ====")
+            print("================================================")
+            self.assertTrue(check_init())
+            self.assertTrue(check_build())
+            self.assertTrue(check_run_docker())
+            self.assertTrue(check_run_local())
+            self.assertTrue(check_test())
+        except Exception as e:
+            self.fail(f"Exception occurred: {e}")
+
 if __name__ == "__main__":
-    rm_temp_dir()
-    success = True
-
-    try:
-        print("==========================================")
-        print("==== Testing legacy template with SSL ====")
-        print("==========================================")
-        success = success and check_init(True) and check_build(True) and check_run_docker(True) and check_run_local(True) and check_test()
-
-        rm_temp_dir()
-
-        print("=============================================")
-        print("==== Testing legacy template without SSL ====")
-        print("=============================================")
-        success = success and check_init(True) and check_build() and check_run_docker() and check_run_local() and check_test()
-
-        rm_temp_dir()
-
-        print("=============================================")
-        print("==== Testing generated template with SSL ====")
-        print("=============================================")
-        success = success and check_init() and check_build(True) and check_run_docker(True) and check_run_local(True) and check_test()
-
-        rm_temp_dir()
-
-        print("================================================")
-        print("==== Testing generated template without SSL ====")
-        print("================================================")
-        success = success and check_init() and check_build() and check_run_docker() and check_run_local() and check_test()
-
-    finally:
-        rm_temp_dir()
-        if success:
-            print("****** ALL TESTS OK *******")
-            sys.exit(0)
-        else:
-            print("!!!!!! A TEST FAILED, CHECK THE LOGS ABOVE !!!!!!")
-            sys.exit(1)
+    success = unittest.main(exit=False).result.wasSuccessful()
+    if success:
+        print("****** ALL TESTS OK *******")
+        sys.exit(0)
+    else:
+        print("!!!!!! A TEST FAILED, CHECK THE LOGS ABOVE !!!!!!")
+        sys.exit(1)
 

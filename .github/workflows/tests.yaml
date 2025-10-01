@@ -18,3 +18,9 @@ jobs:
       run: make install
     - name: Run integration tests
       run: pesto-cli/integrationtests/tests-all.py
+    - name: 'Upload Tests Artifact'
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: tests-artifact
+        path: /tmp/pesto/tests
