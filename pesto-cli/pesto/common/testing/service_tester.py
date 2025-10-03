@@ -21,12 +21,9 @@ class ServiceTester:
         describe = self.endpoint_manager.describe
         expected = expected_describe
 
-        comparison_results = compare_dicts(expected, describe)
-
         # We can afford new keys in the describe
         # as it reflect a newer runtime (new endpoints) than the stored reference.
-        if comparison_results and "KeysNotExpected" in comparison_results:
-            del comparison_results["KeysNotExpected"]
+        comparison_results = compare_dicts(expected, describe, allow_unexpected_keys=True)
 
         comparison_results = comparison_results or {"NoDifference": True}
 
