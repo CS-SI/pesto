@@ -14,11 +14,16 @@ class ServiceTester:
     def validate_health(self):
         return self.endpoint_manager.is_alive
 
+    def validate_metrics(self):
+        return self.endpoint_manager.metrics_available
+
     def validate_describe(self, expected_describe: dict):
         describe = self.endpoint_manager.describe
         expected = expected_describe
 
-        comparison_results = compare_dicts(expected, describe)
+        # We can afford new keys in the describe
+        # as it reflect a newer runtime (new endpoints) than the stored reference.
+        comparison_results = compare_dicts(expected, describe, allow_unexpected_keys=True)
 
         comparison_results = comparison_results or {"NoDifference": True}
 

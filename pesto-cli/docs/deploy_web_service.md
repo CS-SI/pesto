@@ -13,7 +13,8 @@ PESTO create web-services following the [OpenAPI](https://playground-docs.readth
 From a user point of view, several endpoints are defined:
 
 - `/api/v1/describe`: a GET request to get information about the packaged algorithm
-- `/api/v1/health`: a GET request will send back information about the 
+- `/api/v1/health`: a GET request will send back information about the status of the service
+- `/api/v1/metrics`: a GET request will send back information about the metrics of the service
 - `/api/v1/process`: Send the payload (contains input data) that we want to process via a POST request
 - `api/v1/jobs`: a GET request to get the job list (asynchronous)
 - `api/v1/jobs/{jobID}/status`: a GET request to get a job status (asynchronous)
@@ -41,6 +42,13 @@ curl http://localhost:4000/api/v1/health
 
 !!! success
     Return `OK` if the service is up and running
+
+### **metrics**
+It provides a Prometheus metrics of the deployed web service
+
+```bash
+curl http://localhost:4000/api/v1/metrics
+```
 
 ### **process**
 It calls the processing function on provided input parameters. If asynchronous is false in the description, then the call blocks until the result is available. Otherwise, the function returns a jobid for later retrieval of the result -- [process](http://localhost:4000/api/v1/process)
