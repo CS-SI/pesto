@@ -75,6 +75,10 @@ class TestRunner:
 
             all_results = dict()
 
+            metrics = service_tester.endpoint_manager.metrics
+            logger.info("Metrics:")
+            logger.info(metrics)
+
             # Save describes for debug
             expected_describe_file = "expected_describe.ssl.json" if self.ssl else "expected_describe.json"
             with open(self._tmp_test_resources / expected_describe_file, "w") as f:
@@ -106,6 +110,16 @@ class TestRunner:
                     json.dump(response, f, indent=2)
 
                 self._serialize_response(response_path, response)
+
+                # Metrics after one more test
+                metrics = service_tester.endpoint_manager.metrics
+                logger.info("Metrics after one more test:")
+                logger.info(metrics)
+
+            # Metrics after all tests
+            metrics = service_tester.endpoint_manager.metrics
+            logger.info("Metrics after all tests:")
+            logger.info(metrics)
 
         with open(self._tmp_test_resources / "results.json", "w") as f:
             json.dump(all_results, f, indent=2)

@@ -55,6 +55,7 @@ The architecture of the runtime is represented as follows:
 PESTO web server offers three web services that are :
 
 - **/api/v1/health**: provides information on the availability of the service
+- **/api/v1/metrics**: provides information on the metrics of the service
 - **/api/v1/describe**: provides information on the processing service that is deployed. Information on inputs, outputs, deployment requirements and so on are given here. PESTO does not constrain the definition of input and output parameters to offer a versatile solution. In return, a standardization effort has to be conducted in parallel.
 - **/api/v1/process**: call the processing function. Request parameters must respect the definition provided by `/api/v1/describe`.
 

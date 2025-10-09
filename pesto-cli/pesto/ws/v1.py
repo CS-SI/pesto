@@ -5,6 +5,8 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse, Response, RedirectResponse, FileResponse
 
+from pesto.version import PESTO_VERSION
+
 from pesto.ws.service.describe import DescribeService
 from pesto.ws.service.job_delete import JobDeleteService
 from pesto.ws.service.job_list import JobListService
@@ -58,6 +60,32 @@ def version_get(request: Request) -> JSONResponse:
 @v1.get('/health')
 def health() -> Response:
     return Response(content='OK',status_code=200,media_type='text/plain')
+
+@v1.get('/metrics')
+def metrics(request: Request) -> Response:
+    processing_version = DescribeService.compute_version().get("version", "unknown")
+    if processing_semaphore.locked():
+        lock = 1
+    else:
+        lock = 0
+    metrics = (
+        '# HELP pesto_instance_info Information about the Pesto instance\n'
+        '# TYPE pesto_instance_info gauge\n'
+        f'pesto_instance_info{{pesto_version="{PESTO_VERSION}",processing_version="{processing_version}"}} 1\n'
+        '# HELP pesto_processing_lock Information about the jobs\n'
+        '# TYPE pesto_processing_lock gauge\n'
+        f'pesto_processing_lock {lock}\n'
+        '# HELP pesto_jobs_total Information about the jobs\n'
+        '# TYPE pesto_jobs_total gauge\n'
+    )
+    url_root = _get_url_root(request)
+    result = JobListService().job_list(url_root)
+    for job_id in result.keys():
+        job_status = JobStatusService(url_root, job_id).get_status()
+        status = job_status.get('status')
+        progress = job_status.get('progress')
+        metrics += f'pesto_jobs_total{{id="{job_id}",status="{status}",progress="{progress}"}} 1\n'
+    return Response(content=metrics, status_code=200, media_type='text/plain')
 
 @v1.post('/jobs')
 def jobs_post(request: Request) -> JSONResponse:

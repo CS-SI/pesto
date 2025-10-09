@@ -78,10 +78,13 @@ class DescribeService(object):
                     'href': self._compute_endpoint('health'),
                     'type': 'text/plain',
                     'method': 'GET'
+                },
+                'metrics': {
+                    'relation': 'Processing metrics',
+                    'href': self._compute_endpoint('metrics'),
+                    'type': 'text/plain',
+                    'method': 'GET'
                 }
-
-                # metrics
-                ## TODO TO BE IMPLEMENTED
 
                 # icon
                 ## TODO Unimplemented

@@ -431,6 +431,12 @@
       "href": "http://localhost:4000/api/v1/health",
       "type": "text/plain",
       "method": "GET"
+    },
+    "metrics": {
+      "relation": "Processing metrics",
+      "href": "http://localhost:4000/api/v1/metrics",
+      "type": "text/plain",
+      "method": "GET"
     }
   }
 }

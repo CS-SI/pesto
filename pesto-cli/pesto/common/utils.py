@@ -52,7 +52,7 @@ def truncate_dict_for_debug(d: dict, max_size=80):
     return dd
 
 
-def compare_dicts(expected: dict, actual: dict) -> dict:
+def compare_dicts(expected: dict, actual: dict, allow_unexpected_keys: bool = False) -> dict:
     def _is_file(val):
         return isinstance(val, str) and (os.path.exists(val) or os.path.exists(val.replace("file://", "")))
 
@@ -89,7 +89,7 @@ def compare_dicts(expected: dict, actual: dict) -> dict:
         exp_v, actual_v = expected[o], actual[o]
         if isinstance(exp_v, dict) and isinstance(actual_v, dict):
             if not exp_v == actual_v:
-                _cmp = compare_dicts(exp_v, actual_v)
+                _cmp = compare_dicts(exp_v, actual_v, allow_unexpected_keys)
                 if _cmp is not None:
                     modified[o] = _cmp
         elif not _compare_vals(exp_v, actual_v):
@@ -100,7 +100,7 @@ def compare_dicts(expected: dict, actual: dict) -> dict:
 
     comparison = dict()
 
-    if len(added) > 0:
+    if len(added) > 0 and not allow_unexpected_keys:
         comparison["KeysNotExpected"] = added
     if len(removed) > 0:
         comparison["KeysMissing"] = removed
